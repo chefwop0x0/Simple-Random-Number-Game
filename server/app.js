@@ -40,7 +40,7 @@ async function listenToEvents() {
   });
 
   contract.on('CheckEvent', async (player, game, haswon) => {
-    console.log(`CheckEvent logged! - Player ${player} has checked results for Game ${game} - Did she won?: ${haswon}`);
+    console.log(`CheckEvent logged! - Player ${player} has checked result for Game ${game} - Did she won?: ${haswon}`);
   });
 
   contract.on('NewGame', async (game) => {
