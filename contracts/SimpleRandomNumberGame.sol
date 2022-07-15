@@ -51,6 +51,7 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2 {
   }
 
   function requestRandomWords() external onlyOwner {
+    require(s_is_on_draw == false, "Draw ongoing!");
     s_requestId = COORDINATOR.requestRandomWords(
       keyHash,
       s_subscriptionId,
