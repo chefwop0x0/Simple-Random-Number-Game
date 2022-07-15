@@ -1,18 +1,4 @@
 // SPDX-License-Identifier: MIT
-// An example of a consumer contract that relies on a subscription for funding.
-/*
-- create subscription
-- deploy contract
-- add consumer
-- update contract address in server config
-- launch node script to catch events
-- from remix, play 1 number
-- check should revert
-- request randomness
-- show winning number
-- check if player has won or not
-*/
-
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
@@ -38,6 +24,7 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2 {
   uint256 public s_requestId;
   address s_owner;
   uint256 public s_game;
+  bool public s_is_on_draw = false;
   mapping(address => mapping(uint => uint)) public s_player_game_number;
   mapping(uint => uint) public s_game_result;
 
@@ -51,14 +38,15 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2 {
   function play(uint _number) external {
     require(s_player_game_number[msg.sender][s_game]==0, "You already played this game!");
     require(_number > 0 && _number < 11, "Invalid Number");
+    require(s_is_on_draw == false, "Draw ongoing!");
     s_player_game_number[msg.sender][s_game] = _number;
     emit PlayEvent(msg.sender, _number, s_game);
   }
 
-  function check(uint _game) external returns(bool) {
+  function check(uint _game) external view returns(bool) {
     require(s_game_result[_game]!=0, "Game result not set yet!");
     bool result = (s_player_game_number[msg.sender][_game] == s_game_result[_game]) ? true : false;
-    emit CheckEvent(msg.sender, s_game, result);
+    //emit CheckEvent(msg.sender, s_game, result);
     return result;
   }
 
@@ -70,16 +58,18 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2 {
       callbackGasLimit,
       numWords
     );
+    s_is_on_draw = true;
     emit RandomNumberRequestEvent(s_game);
   }
   
   function fulfillRandomWords(uint256, /* requestId */ uint256[] memory randomWords) internal override {
     s_randomWords = randomWords;
     for(uint i=0; i<s_randomWords.length; ++i) {
-      uint randomNumber = s_randomWords[i] % 10;
+      uint randomNumber = (s_randomWords[i] % 9) + 1;
       s_game_result[s_game] = randomNumber;
       emit RandomNumberEvent(randomNumber, s_game);
     }
+    s_is_on_draw = false;
     s_game = block.number;
     emit NewGame(s_game);
   }
