@@ -61,8 +61,8 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2 {
   }
 
   function check(uint _game) external view returns(bool) {
-    require(s_game_results[_game]!=0, "Game result not set yet!");
-    bool result = (s_player_game_numbers[msg.sender][_game][s_game_results[_game]] == 1) ? true : false;
+    require(s_game_results[_game].length!=0, "Game result not set yet!");
+    bool result = (s_player_game_numbers[msg.sender][s_game][s_game_results[s_game][0]] == 1) ? true : false;
     //emit CheckEvent(msg.sender, s_game, result);
     return result;
   }
@@ -84,7 +84,6 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2 {
     s_randomWords = randomWords;
     for(uint i=0; i<s_randomWords.length; ++i) {
       uint winningNumber = (s_randomWords[i] % 9) + 1;
-      s_game_results[s_game] = winningNumber;
       // store sb winning number
       s_game_results[s_game].push(winningNumber);
       // store sb winners count
