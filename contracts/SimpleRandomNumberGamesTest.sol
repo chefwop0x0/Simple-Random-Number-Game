@@ -125,8 +125,14 @@ contract SimpleRandomNumberGame is VRFConsumerBaseV2, ReentrancyGuard, Ownable {
     s_game_current = block.number+s_game_duration;
     emit NewGame(s_game_current);
   }
-  
-  function fulfillRandomWords(uint256, /* requestId */ uint256[] memory randomWords) internal override {
+  // only for testing purpose
+  function triggerFulFill() external {
+    uint256[] memory arr;
+    arr[0] = 3234234823402384923804820342342342342342342342344234234234234234239292929233;
+    fulfillRandomWords(345, arr);
+  }
+
+  function fulfillRandomWords(uint256, /* requestId,*/ uint256[] memory randomWords) internal override {
     s_randomWords = randomWords;
     for(uint i=0; i<s_randomWords.length; ++i) {
       // calc winning number
