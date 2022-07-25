@@ -11,6 +11,18 @@ contract("SimpleRandomNumberGame", (accounts) => {
     });
 
     it("Test", async () => {
+
+        // play 1 game ok
+        // play same number should fail
+        // play wrong number should fail
+
+        // play second account
+
+        // play third
+
+        // 
+
+
         assert.equal(1, 1, "Wrong!");
     });
 
